@@ -8,6 +8,7 @@
 </p>
 
 <p align="center">
+  <a href="https://ziwaa-se.github.io/gammacert/"><img src="https://img.shields.io/badge/project%20page-interactive%20calculator-0f9d8e?logo=githubpages&logoColor=white" alt="Project page"></a>
   <a href="#quickstart"><img src="https://img.shields.io/badge/python-3.9%2B-2a78d6" alt="Python 3.9+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-1baf7a" alt="MIT license"></a>
   <a href="https://github.com/ziwaa-se/gammacert/actions/workflows/tests.yml"><img src="https://github.com/ziwaa-se/gammacert/actions/workflows/tests.yml/badge.svg" alt="tests"></a>
@@ -15,7 +16,6 @@
 </p>
 
 <p align="center">
-  <a href="https://ziwaa-se.github.io/gammacert/"><b>Project page and interactive calculator</b></a> ·
   <a href="#quickstart">Quickstart</a> ·
   <a href="#what-you-can-compute">API</a> ·
   <a href="#examples">Examples</a> ·
