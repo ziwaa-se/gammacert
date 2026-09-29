@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+title: "gammacert: Γ-robust bounds for strategic AI oversight"
+authors:
+  - family-names: She
+    given-names: Zihua
+    email: she8@purdue.edu
+  - family-names: Wang
+    given-names: Xiao
+    email: wangxiao@purdue.edu
+repository-code: "https://github.com/ziwaa-se/gammacert"
+license: MIT
+version: 0.1.0
