@@ -1,0 +1,19 @@
+{
+ "Qwen3-14B__monitor_default__full|all": 92.5,
+ "Qwen3-14B__monitor_default__full__think__n2|all": 65.0,
+ "Qwen3-32B-AWQ__monitor_default__full|all": 71.75,
+ "Qwen3-32B-AWQ__monitor_default__full__think__n2|all": 60.0,
+ "Qwen3-32B__monitor_checklist__full|all": 86.25,
+ "Qwen3-32B__monitor_default__full|all": 70.75,
+ "Qwen3-32B__monitor_default__full__think__n2|all": 67.5,
+ "Qwen3-32B__monitor_minimal__full|all": 100.0,
+ "Qwen3-8B__monitor_default__full|all": 88.75,
+ "Qwen3-8B__monitor_default__full__think__n2|all": 60.0,
+ "Qwen3-8B__monitor_minimal__full|all": 100.0,
+ "gpt-oss-120b__monitor_checklist__full__think__n2|all": 92.5,
+ "gpt-oss-120b__monitor_default__action_only__think__n2|all": 57.0,
+ "gpt-oss-120b__monitor_default__full|all": 56.75,
+ "gpt-oss-120b__monitor_default__full__think__n2|all": 68.0,
+ "gpt-oss-120b__monitor_default__task_action__think__n2|all": 44.0,
+ "gpt-oss-120b__monitor_minimal__full__think__n2|all": 48.5
+}

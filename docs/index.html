@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gammacert: Γ-robust bounds for strategic AI oversight</title>
+<meta name="description" content="Finite-sample safety certificates from AI monitoring records that stay valid when the monitored system can see the monitoring design.">
+<link rel="icon" href="static/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #fcfcfb; --surface: #ffffff; --surface-2: #f3f4f2; --border: #e4e3df;
+  --text: #0b0b0b; --text-2: #52514e; --muted: #7b7a75;
+  --navy: #0b1b33; --teal: #0f9d8e; --teal-soft: #d6f3ef; --amber: #c27c00; --amber-soft: #fdf1d8;
+  --series-1: #2a78d6; --series-2: #eb6834; --grid: #e4e3df;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --bg: #121211; --surface: #1a1a19; --surface-2: #232321; --border: #33332f;
+    --text: #ffffff; --text-2: #c3c2b7; --muted: #8f8e86;
+    --navy: #e8eef7; --teal: #2dd4bf; --teal-soft: #11332f; --amber: #f5b53b; --amber-soft: #33270f;
+    --series-1: #3987e5; --series-2: #d95926; --grid: #33332f;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211; --surface: #1a1a19; --surface-2: #232321; --border: #33332f;
+  --text: #ffffff; --text-2: #c3c2b7; --muted: #8f8e86;
+  --navy: #e8eef7; --teal: #2dd4bf; --teal-soft: #11332f; --amber: #f5b53b; --amber-soft: #33270f;
+  --series-1: #3987e5; --series-2: #d95926; --grid: #33332f;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 Inter, system-ui, sans-serif; }
+a { color: var(--teal); }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+header.hero { padding: 56px 0 28px; text-align: center; }
+.hero img.logo { width: 96px; height: 96px; }
+h1 { font-size: clamp(28px, 4.6vw, 44px); line-height: 1.15; margin: 14px 0 12px; color: var(--navy); letter-spacing: -0.02em; }
+.authors { font-size: 19px; font-weight: 600; }
+.affil { color: var(--text-2); margin-top: 2px; }
+.buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 999px; font-weight: 600; font-size: 15px;
+       background: var(--navy); color: var(--bg); text-decoration: none; border: 1px solid var(--navy); cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--navy); }
+.btn.disabled { opacity: .5; cursor: default; }
+section { padding: 34px 0; border-top: 1px solid var(--border); }
+h2 { font-size: 26px; margin: 0 0 14px; color: var(--navy); letter-spacing: -0.01em; }
+p.lead { font-size: 18px; color: var(--text-2); max-width: 820px; }
+figure { margin: 18px 0; }
+figure img { width: 100%; border-radius: 12px; border: 1px solid var(--border); background: #fcfcfb; }
+figcaption { color: var(--text-2); font-size: 14px; margin-top: 8px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
+.stat .v { font-size: 30px; font-weight: 800; color: var(--navy); letter-spacing: -0.02em; }
+.stat .l { color: var(--text-2); font-size: 14px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+/* calculator */
+.calc { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+.calc-top { display: grid; grid-template-columns: 1.15fr 1fr; gap: 22px; }
+@media (max-width: 860px) { .calc-top { grid-template-columns: 1fr; } }
+table.strata { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.strata th { text-align: left; color: var(--text-2); font-weight: 600; padding: 4px 6px; border-bottom: 1px solid var(--border); }
+table.strata td { padding: 4px 6px; }
+table.strata input { width: 100%; min-width: 64px; padding: 5px 7px; border: 1px solid var(--border); border-radius: 8px;
+                     background: var(--surface-2); color: var(--text); font: 14px "JetBrains Mono", monospace; }
+.covbar { height: 10px; border-radius: 5px; background: var(--teal); min-width: 2px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin: 12px 0 4px; font-size: 14px; color: var(--text-2); }
+.controls select, .controls input[type=number] { padding: 4px 6px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); }
+.pill { border: 1px solid var(--border); background: var(--surface-2); color: var(--text); padding: 6px 12px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 600; }
+.pill:hover { border-color: var(--teal); }
+.readout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+.readout .box { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; }
+.readout .num { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.readout .lab { font-size: 13px; color: var(--text-2); }
+.gamma-row { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-2); }
+.gamma-row input[type=range] { flex: 1; accent-color: var(--teal); }
+#chart { width: 100%; height: 300px; display: block; }
+#tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+       padding: 6px 10px; font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,.12); display: none; white-space: nowrap; }
+.legend { display: flex; gap: 16px; font-size: 13px; color: var(--text-2); margin-top: 4px; }
+.legend i { display: inline-block; width: 16px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.note { font-size: 13px; color: var(--muted); margin-top: 10px; }
+pre.bib { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; overflow-x: auto;
+          font: 13px/1.5 "JetBrains Mono", monospace; }
+code { font-family: "JetBrains Mono", monospace; font-size: .92em; }
+footer { color: var(--muted); font-size: 13px; padding: 30px 0 50px; border-top: 1px solid var(--border); text-align: center; }
+.theme { position: fixed; top: 12px; right: 12px; }
+</style>
+</head>
+<body>
+<button class="pill theme" id="themeBtn" aria-label="Toggle color theme">◐ theme</button>
+
+<header class="hero wrap">
+  <img class="logo" src="static/logo.svg" alt="">
+  <h1>How much can a silent monitor rule out?<br>Γ-robust bounds for strategic AI oversight</h1>
+  <div class="buttons">
+    <span class="btn disabled" title="coming soon">Paper (coming soon)</span>
+    <a class="btn" href="https://github.com/ziwaa-se/gammacert">Code</a>
+    <a class="btn ghost" href="#calculator">Try the calculator</a>
+    <a class="btn ghost" href="#bibtex">BibTeX</a>
+  </div>
+</header>
+
+<main class="wrap">
+<section>
+  <h2>A silent monitor is not a safety proof</h2>
+  <p class="lead">AI developers monitor deployed models by sending a sample of traffic to another model, and a record of zero or few flags
+  is read as evidence that harmful behavior is rare. That inference assumes the monitored system cannot tell where oversight is weak.
+  A capable system can: the features that set monitoring intensity are part of the context it acts on. We give confidence bounds on
+  the number of harmful actions that stay valid when the system can see the stratification, and show how to design monitoring so
+  that knowing the policy gives little advantage.</p>
+  <figure>
+    <img src="static/hero_certificate_and_recall.png" alt="Certificate against strategic concentration and measured recall by stratum">
+    <figcaption>Left: five tiers with the sampling rates of a published risk report. A silent record rules out about 3 harmful actions
+    if harm follows traffic, and 244 if harm may be twice over-represented in weakly monitored traffic; equal effective coverage at the
+    same budget certifies 8.3 for every Γ. Right: one open-weight monitor on 16 attack strata from three public benchmarks.</figcaption>
+  </figure>
+  <div class="stats">
+    <div class="stat"><div class="v">2.6 → 244</div><div class="l">bound after zero detections when harm may be 2× over-represented in weak strata</div></div>
+    <div class="stat"><div class="v">8.3 for every Γ</div><div class="l">same budget, equal effective coverage</div></div>
+    <div class="stat"><div class="v">0 to 0.92</div><div class="l">recall of one monitor across 16 attack strata</div></div>
+    <div class="stat"><div class="v">19 vs 18,723</div><div class="l">bounds under two signals with the same AUC of 0.55</div></div>
+  </div>
+</section>
+
+<section id="calculator">
+  <h2>Certificate calculator</h2>
+  <p class="lead">Edit the strata, then move Γ: harmful actions may be at most Γ times over-represented in any stratum relative to its
+  traffic share. The chart compares your design with equal effective coverage at the same monitored fraction.</p>
+  <div class="calc">
+    <div class="controls">
+      <span>Preset:</span>
+      <button class="pill" data-preset="report">Report-shaped tiers</button>
+      <button class="pill" data-preset="uniform">Uniform 25% routing</button>
+      <button class="pill" data-preset="openai">Near-complete routing</button>
+      <button class="pill" id="equalize">Equalize coverage</button>
+    </div>
+    <div class="calc-top">
+      <div>
+        <table class="strata" aria-label="Monitoring strata">
+          <thead><tr><th>stratum</th><th>traffic share</th><th>routing π</th><th>recall r</th><th>coverage c = πr</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <div class="controls">
+          <label>confidence
+            <select id="alpha"><option value="0.05">95%</option><option value="0.01">99%</option><option value="0.1">90%</option></select></label>
+          <label>detections <input id="dets" type="number" min="0" max="50" step="1" value="0" style="width:64px"></label>
+          <span id="budget"></span>
+        </div>
+      </div>
+      <div>
+        <div class="readout">
+          <div class="box"><div class="num" id="uNow" style="color:var(--series-1)">–</div><div class="lab">bound on harmful actions, your design</div></div>
+          <div class="box"><div class="num" id="uEq" style="color:var(--series-2)">–</div><div class="lab">same budget, equal coverage</div></div>
+        </div>
+        <div class="gamma-row"><span>Γ</span><input id="gamma" type="range" min="0" max="2" step="0.01" value="0"><b id="gval">1.00</b></div>
+        <div style="position:relative">
+          <svg id="chart" role="img" aria-label="Certificate against Gamma for your design and for equal coverage"></svg>
+          <div id="tip"></div>
+        </div>
+        <div class="legend"><span><i style="background:var(--series-1)"></i>your design</span><span><i style="background:var(--series-2)"></i>equal coverage, same budget</span></div>
+      </div>
+    </div>
+    <p class="note">Zero detections: $U_\alpha(0;\Gamma)=\log(1/\alpha)/\mathrm{LCVaR}_{1/\Gamma}(\kappa)$ with $\kappa_h=-\log(1-c_h)$.
+    With $d\ge1$ detections the bound is $\lambda_\alpha(d)/\mathrm{LCVaR}_{1/\Gamma}(c)$, where $\lambda_\alpha(d)$ is the exact Poisson
+    upper limit. The same numbers come from <code>gammacert.certificate(pi, recall, shares, gamma, detections)</code>.</p>
+  </div>
+</section>
+
+<section>
+  <h2>The idea</h2>
+  <div class="grid2">
+    <div>
+      <p>A harmful unit in stratum $h$ is detected with probability $c_h=\pi_h r_h$: it must be routed to the monitor and recognized.
+      A strategic system can move harm toward strata where $c_h$ is small. If harm may be at most $\Gamma$ times over-represented
+      anywhere, a silent record certifies</p>
+      $$U_\alpha(0;\Gamma)=\frac{\log(1/\alpha)}{\mathrm{LCVaR}_{1/\Gamma}(\kappa)},$$
+      <p>the detection hazard averaged over the least-covered fraction $1/\Gamma$ of traffic. The bound needs only the monitor's own
+      randomization, no model of the system's behavior.</p>
+    </div>
+    <div>
+      <p><b>Partial visibility.</b> When the system only partly infers the policy, the certificate depends on the extreme lower tail
+      of its posterior detection probability. AUC, guessing accuracy and every summary that is Lipschitz in total variation cannot
+      bound that tail.</p>
+      <p><b>Robust design.</b> Equalizing effective coverage is minimax optimal once Γ is large enough, and a hidden randomized floor
+      $\pi_0\ge(1-\alpha^{1/K})/r_{\min}$ certifies at most $K$ harmful actions whatever the system knows.</p>
+      <p><b>Campaigns.</b> Subsampling cannot rule out one catastrophic action unless coverage is nearly complete, but it can bound the
+      probability that a multi-step campaign escapes interruption.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Measurements</h2>
+  <p class="lead">We scored 4,058 transcripts from APPS backdoors, BashArena and SLEIGHT-Bench with seventeen open-weight monitor configurations.</p>
+  <div class="grid2">
+    <figure><img src="static/tail_stress_test.png" alt="Tail stress test"><figcaption>A model asked which attacks the monitor will miss (AUC 0.58) finds a 1% tail with recall 0.125; a probe with higher AUC finds a weaker tail.</figcaption></figure>
+    <figure><img src="static/designs.png" alt="Five designs"><figcaption>Five designs at the same monitored fraction on measured recall bounds: risk-targeted routing certifies nothing at Γ = 5, equal coverage stays below 8.8.</figcaption></figure>
+  </div>
+  <figure style="max-width:620px;margin:0 auto"><img src="static/validity.png" alt="Validity"><figcaption>510,390 exact coverage checks: never above α, and the exact Poisson constant uses ≥ 99.95% of it.</figcaption></figure>
+</section>
+
+<section id="bibtex">
+  <h2>BibTeX</h2>
+  <button class="pill" id="copyBib">Copy</button>
+<pre class="bib" id="bib">@software{gammacert2026,
+  title  = {gammacert: Γ-robust bounds for strategic AI oversight},
+  author = {{The gammacert authors}},
+  year   = {2026},
+  url    = {https://github.com/ziwaa-se/gammacert}
+}</pre>
+</section>
+</main>
+
+<footer class="wrap">Questions and issues: <a href="https://github.com/ziwaa-se/gammacert/issues">GitHub issue tracker</a></footer>
+
+<script>
+// ---------- theme toggle (remembered per viewer when storage is available)
+(function () {
+  const root = document.documentElement, btn = document.getElementById("themeBtn");
+  try { const t = localStorage.getItem("zd-theme"); if (t) root.dataset.theme = t; } catch (e) {}
+  btn.addEventListener("click", () => {
+    const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    try { localStorage.setItem("zd-theme", root.dataset.theme); } catch (e) {}
+    draw();
+  });
+})();
+
+// ---------- the certificate (same formulas as gammacert.certificate)
+const kappa = c => -Math.log1p(-Math.min(c, 1));
+function lcvar(vals, w, beta) {                 // mean of vals over the lowest `beta` share of traffic
+  const tot = w.reduce((a, b) => a + b, 0), idx = vals.map((_, i) => i).sort((a, b) => vals[a] - vals[b]);
+  if (beta >= 1) return vals.reduce((s, v, i) => s + v * w[i] / tot, 0);
+  let rem = beta, acc = 0;
+  for (const i of idx) { const take = Math.min(w[i] / tot, rem); acc += take * vals[i]; rem -= take; if (rem <= 1e-15) break; }
+  return acc / beta;
+}
+function poissonCdf(d, lam) { let term = Math.exp(-lam), s = term; for (let k = 1; k <= d; k++) { term *= lam / k; s += term; } return s; }
+function lamExact(d, alpha) {                   // lambda with P(Poisson(lambda) <= d) = alpha
+  if (d === 0) return Math.log(1 / alpha);
+  let lo = 0, hi = d + 60 + 10 * Math.sqrt(d + 1);
+  for (let it = 0; it < 200; it++) { const mid = (lo + hi) / 2; if (poissonCdf(d, mid) > alpha) lo = mid; else hi = mid; }
+  return (lo + hi) / 2;
+}
+function certificate(pi, r, w, gamma, d, alpha) {
+  const c = pi.map((p, i) => p * r[i]);
+  const den = d === 0 ? lcvar(c.map(kappa), w, 1 / gamma) : lcvar(c, w, 1 / gamma);
+  const num = d === 0 ? Math.log(1 / alpha) : lamExact(d, alpha);
+  return den > 0 ? num / den : Infinity;
+}
+function equalCoverage(r, w, budget) {
+  const tot = w.reduce((a, b) => a + b, 0);
+  if (r.some(x => x <= 0)) return r.map(() => 0);
+  const hb = 1 / r.reduce((s, x, i) => s + (w[i] / tot) / x, 0);
+  return r.map(x => Math.min(1, budget * hb / x));
+}
+
+// ---------- state and presets
+const PRESETS = {
+  report:  { w: [0.40, 0.10, 0.20, 0.21, 0.09], pi: [1, 0.25, 0.05, 0.002, 0.0002], r: [0.94, 0.94, 0.58, 0.58, 0.44] },
+  uniform: { w: [0.2, 0.2, 0.2, 0.2, 0.2],       pi: [0.25, 0.25, 0.25, 0.25, 0.25], r: [0.92, 0.78, 0.65, 0.51, 0.03] },
+  openai:  { w: [0.999, 0.001, 0, 0, 0],         pi: [1, 0, 0, 0, 0],                r: [0.5, 0.5, 0.5, 0.5, 0.5] },
+};
+let S = JSON.parse(JSON.stringify(PRESETS.report));
+const rowsEl = document.getElementById("rows");
+const fmt = u => !isFinite(u) ? "∞" : u >= 1e4 ? u.toExponential(1).replace("e+", "×10^") : u >= 100 ? Math.round(u).toLocaleString() : u.toFixed(1);
+
+function renderRows() {
+  rowsEl.innerHTML = "";
+  S.w.forEach((_, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${i + 1}</td>` + ["w", "pi", "r"].map(k =>
+      `<td><input type="number" step="any" min="0" ${k === "w" ? "" : 'max="1"'} data-k="${k}" data-i="${i}" value="${S[k][i]}"></td>`).join("") +
+      `<td><div class="covbar" id="cb${i}"></div></td>`;
+    rowsEl.appendChild(tr);
+  });
+  rowsEl.querySelectorAll("input").forEach(el => el.addEventListener("input", e => {
+    const v = parseFloat(e.target.value); if (!isNaN(v) && v >= 0) { S[e.target.dataset.k][+e.target.dataset.i] = e.target.dataset.k === "w" ? v : Math.min(v, 1); update(); }
+  }));
+}
+document.querySelectorAll("[data-preset]").forEach(b => b.addEventListener("click", () => { S = JSON.parse(JSON.stringify(PRESETS[b.dataset.preset])); renderRows(); update(); }));
+document.getElementById("equalize").addEventListener("click", () => {
+  const tot = S.w.reduce((a, b) => a + b, 0), budget = S.w.reduce((s, w, i) => s + w / tot * S.pi[i], 0);
+  S.pi = equalCoverage(S.r, S.w, budget).map(x => +x.toFixed(4)); renderRows(); update();
+});
+["alpha", "dets", "gamma"].forEach(id => document.getElementById(id).addEventListener("input", update));
+
+function params() {
+  return { alpha: +document.getElementById("alpha").value, d: Math.max(0, Math.round(+document.getElementById("dets").value || 0)),
+           gamma: Math.pow(10, +document.getElementById("gamma").value) };
+}
+function update() {
+  const { alpha, d, gamma } = params(), tot = S.w.reduce((a, b) => a + b, 0) || 1;
+  const budget = S.w.reduce((s, w, i) => s + w / tot * S.pi[i], 0), eq = equalCoverage(S.r, S.w, budget);
+  document.getElementById("gval").textContent = gamma.toFixed(2);
+  document.getElementById("budget").textContent = `monitored fraction ${budget.toFixed(3)}`;
+  document.getElementById("uNow").textContent = fmt(certificate(S.pi, S.r, S.w, gamma, d, alpha));
+  document.getElementById("uEq").textContent = fmt(certificate(eq, S.r, S.w, gamma, d, alpha));
+  S.w.forEach((_, i) => { const el = document.getElementById("cb" + i); if (el) el.style.width = (100 * S.pi[i] * S.r[i]).toFixed(1) + "%"; });
+  draw();
+}
+
+// ---------- chart: certificate against Gamma (log-log), crosshair tooltip
+const svg = document.getElementById("chart"), tip = document.getElementById("tip");
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+let curves = null, geom = null;
+function draw() {
+  const { alpha, d, gamma } = params(), tot = S.w.reduce((a, b) => a + b, 0) || 1;
+  const budget = S.w.reduce((s, w, i) => s + w / tot * S.pi[i], 0), eq = equalCoverage(S.r, S.w, budget);
+  const W = svg.clientWidth || 480, H = 300, m = { l: 52, r: 14, t: 12, b: 36 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const gs = Array.from({ length: 121 }, (_, i) => Math.pow(10, 2 * i / 120));
+  curves = [gs.map(g => certificate(S.pi, S.r, S.w, g, d, alpha)), gs.map(g => certificate(eq, S.r, S.w, g, d, alpha))];
+  const fin = curves.flat().filter(isFinite), ymin = Math.max(0.5, Math.min(...fin, 1) * 0.8), ymax = Math.min(1e7, Math.max(...fin, 10) * 1.6);
+  const lx = g => m.l + iw * Math.log10(g) / 2, ly = u => m.t + ih * (1 - (Math.log10(Math.min(u, ymax)) - Math.log10(ymin)) / (Math.log10(ymax) - Math.log10(ymin)));
+  geom = { gs, lx, ly, m, iw, W, H };
+  let s = `<rect x="0" y="0" width="${W}" height="${H}" fill="none"/>`;
+  for (let e = Math.ceil(Math.log10(ymin)); e <= Math.floor(Math.log10(ymax)); e++) {
+    const y = ly(Math.pow(10, e));
+    s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y}" y2="${y}" stroke="${css("--grid")}"/><text x="${m.l - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="${css("--text-2")}">${e <= 3 ? Math.pow(10, e).toLocaleString() : "10^" + e}</text>`;
+  }
+  [1, 2, 5, 10, 20, 50, 100].forEach(g => { s += `<text x="${lx(g)}" y="${H - 14}" text-anchor="middle" font-size="11" fill="${css("--text-2")}">${g}</text>`; });
+  s += `<text x="${m.l + iw / 2}" y="${H - 1}" text-anchor="middle" font-size="12" fill="${css("--text-2")}">Γ (strategic concentration)</text>`;
+  ["--series-1", "--series-2"].forEach((col, k) => {
+    let path = "", pen = false;
+    gs.forEach((g, i) => { const u = curves[k][i]; if (isFinite(u) && u <= ymax) { path += (pen ? "L" : "M") + lx(g).toFixed(1) + "," + ly(u).toFixed(1); pen = true; } else pen = false; });
+    s += `<path d="${path}" fill="none" stroke="${css(col)}" stroke-width="2" stroke-linejoin="round"/>`;
+  });
+  s += `<line x1="${lx(gamma)}" x2="${lx(gamma)}" y1="${m.t}" y2="${m.t + ih}" stroke="${css("--text-2")}" stroke-dasharray="3 3"/>`;
+  s += `<line id="xh" x1="0" x2="0" y1="${m.t}" y2="${m.t + ih}" stroke="${css("--muted")}" visibility="hidden"/>`;
+  s += `<rect id="hit" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent"/>`;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.innerHTML = s;
+  const hit = svg.querySelector("#hit"), xh = svg.querySelector("#xh");
+  hit.addEventListener("mousemove", ev => {
+    const r = svg.getBoundingClientRect(), x = (ev.clientX - r.left) * (W / r.width);
+    const i = Math.max(0, Math.min(120, Math.round(120 * (x - m.l) / iw))), g = gs[i];
+    xh.setAttribute("x1", lx(g)); xh.setAttribute("x2", lx(g)); xh.setAttribute("visibility", "visible");
+    tip.style.display = "block"; tip.style.left = Math.min(r.width - 170, (lx(g) / W) * r.width + 12) + "px"; tip.style.top = "10px";
+    tip.innerHTML = `Γ = ${g.toFixed(2)}<br><span style="color:var(--series-1)">■</span> your design: <b>${fmt(curves[0][i])}</b><br><span style="color:var(--series-2)">■</span> equal coverage: <b>${fmt(curves[1][i])}</b>`;
+  });
+  hit.addEventListener("mouseleave", () => { tip.style.display = "none"; xh.setAttribute("visibility", "hidden"); });
+}
+window.addEventListener("resize", draw);
+document.getElementById("copyBib").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(document.getElementById("bib").textContent); document.getElementById("copyBib").textContent = "Copied"; }
+  catch (e) { document.getElementById("copyBib").textContent = "Select and copy"; }
+});
+renderRows(); update();
+</script>
+</body>
+</html>

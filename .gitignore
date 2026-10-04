@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ipynb_checkpoints/
+outputs/
+results_local/
+data_canonical/
+jobs/logs/
+.DS_Store

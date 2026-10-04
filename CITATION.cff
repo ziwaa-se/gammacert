@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "gammacert: Γ-robust bounds for strategic AI oversight"
+authors:
+  - name: "The gammacert authors"
+repository-code: "https://github.com/ziwaa-se/gammacert"
+license: MIT
+version: 0.1.0

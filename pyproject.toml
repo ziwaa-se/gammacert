@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gammacert"
+version = "0.1.0"
+description = "Γ-robust upper bounds on harmful actions from AI monitoring records, and monitoring designs that stay robust"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "The gammacert authors"}]
+dependencies = ["numpy>=1.23", "scipy>=1.9"]
+
+[project.optional-dependencies]
+reproduce = ["pandas>=1.5", "pyarrow", "matplotlib>=3.6", "scikit-learn"]
+monitors = ["pandas>=1.5", "pyarrow", "datasets", "huggingface_hub", "vllm==0.29.0", "scikit-learn"]
+dev = ["pytest"]
+
+[project.urls]
+Homepage = "https://github.com/ziwaa-se/gammacert"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,6 @@
+rL,design,budget_used,U_G1,U_G2,U_G10,U_G16,U_Ginf
+true_rL,report-shaped tiers,0.6937499999999992,3.835198825175169,14.449807217101789,3269657.37274818,inf,inf
+true_rL,risk-targeted,0.69375,3.741439898361409,12.154614271395332,inf,inf,inf
+true_rL,equal effective coverage,0.0,inf,inf,inf,inf,inf
+true_rL,uniform hidden floor,0.69375,6.216387689197726,11.850050281619458,235647.2753657156,inf,inf
+true_rL,floor + risk overlay,0.69375,3.741439898361409,12.154614271395332,inf,inf,inf
